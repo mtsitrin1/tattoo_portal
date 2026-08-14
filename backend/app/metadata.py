@@ -67,6 +67,40 @@ class OpenAIVisionProvider:
         return TattooMetadata.model_validate(json.loads(content))
 
 
+class OpenAIDescriptionProvider:
+    def __init__(self, api_key: str, model: str = "gpt-4o-mini") -> None:
+        self.client = OpenAI(api_key=api_key)
+        self.model = model
+
+    def generate(self, image_bytes: bytes, metadata: TattooMetadata) -> str:
+        encoded_image = base64.b64encode(image_bytes).decode("ascii")
+        response = self.client.chat.completions.create(
+            model=self.model,
+            temperature=0,
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "Write one concise, natural-language tattoo description for semantic "
+                        "search. Mention the subject, style, placement, color, size, "
+                        "complexity, and orientation when available. Do not invent details."
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": f"Metadata: {metadata.model_dump()}"},
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": f"data:image/jpeg;base64,{encoded_image}"},
+                        },
+                    ],
+                },
+            ],
+        )
+        return (response.choices[0].message.content or "").strip()
+
+
 def extract_metadata_batch(
     session: Session,
     provider: VisionMetadataProvider,
@@ -88,4 +122,29 @@ def extract_metadata_batch(
             session.rollback()
             failed += 1
             logger.exception("metadata_extraction_failed tattoo_id=%s", tattoo_id)
+    return succeeded, failed
+
+
+def generate_descriptions_batch(
+    session: Session,
+    provider,
+    records: Iterable[tuple[UUID, bytes, TattooMetadata]],
+) -> tuple[int, int]:
+    succeeded = 0
+    failed = 0
+    for tattoo_id, image_bytes, metadata in records:
+        try:
+            description = provider.generate(image_bytes, metadata)
+            if not description:
+                raise ValueError("description provider returned an empty description")
+            tattoo = session.get(Tattoo, tattoo_id)
+            if tattoo is None:
+                raise ValueError(f"tattoo {tattoo_id} does not exist")
+            tattoo.semantic_description = description
+            session.commit()
+            succeeded += 1
+        except Exception:
+            session.rollback()
+            failed += 1
+            logger.exception("description_generation_failed tattoo_id=%s", tattoo_id)
     return succeeded, failed
