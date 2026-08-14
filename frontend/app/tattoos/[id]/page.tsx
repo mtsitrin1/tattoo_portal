@@ -10,16 +10,22 @@ type Detail = {
   metadata: Record<string, string | null>;
 };
 
+type Similar = { id: string; image_url: string; semantic_description: string | null };
+
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 export default function TattooDetailPage() {
   const params = useParams<{ id: string }>();
   const [detail, setDetail] = useState<Detail | null>(null);
+  const [similar, setSimilar] = useState<Similar[]>([]);
 
   useEffect(() => {
     fetch(`${apiUrl}/tattoos/${params.id}`)
       .then((response) => response.json())
       .then(setDetail);
+    fetch(`${apiUrl}/tattoos/${params.id}/similar`)
+      .then((response) => response.json())
+      .then((result) => setSimilar(result.items ?? []));
   }, [params.id]);
 
   if (!detail) return <main><p>Loading tattoo…</p></main>;
@@ -36,6 +42,15 @@ export default function TattooDetailPage() {
           <div key={key}><dt>{key}</dt><dd>{value}</dd></div>
         ))}
       </dl>
+      <section aria-label="More like this">
+        <h2>More like this</h2>
+        {similar.map((item) => (
+          <a key={item.id} href={`/tattoos/${item.id}`}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={item.image_url} alt={item.semantic_description ?? "Similar tattoo"} />
+          </a>
+        ))}
+      </section>
     </main>
   );
 }

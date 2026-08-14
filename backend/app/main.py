@@ -12,6 +12,7 @@ from app.ingestion import IngestionService
 from app.quality import get_quality_stats
 from app.query_parser import OpenAIQueryParser
 from app.search import search_tattoos
+from app.similar import similar_tattoos
 from app.storage import ImageStorage, StorageConfig
 from app.vector_search import embedding_provider_from_env, vector_search
 
@@ -41,6 +42,21 @@ def tattoo_detail(tattoo_id: str, session: Session = Depends(get_session)) -> di
     if detail is None:
         raise HTTPException(status_code=404, detail="Tattoo not found")
     return detail
+
+
+@app.get("/tattoos/{tattoo_id}/similar")
+def similar_tattoo_endpoint(
+    tattoo_id: str,
+    limit: int = Query(default=12, ge=1, le=50),
+    session: Session = Depends(get_session),  # noqa: B008
+) -> dict[str, object]:
+    try:
+        from uuid import UUID
+
+        parsed_id = UUID(tattoo_id)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail="Invalid tattoo id") from error
+    return {"tattoo_id": tattoo_id, "items": similar_tattoos(session, parsed_id, limit)}
 
 
 @app.get("/search")
