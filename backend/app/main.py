@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.db import get_session
 from app.detail import get_tattoo_detail
 from app.events import EVENT_TYPES, list_events, record_event
+from app.feed import get_feed
 from app.gallery import get_gallery
 from app.hybrid_search import hybrid_search
 from app.ingestion import IngestionService
@@ -145,6 +146,19 @@ def events_endpoint(limit: int = Query(default=100, ge=1, le=1000), session: Ses
          "event_type": event.event_type, "created_at": event.created_at.isoformat()}
         for event in list_events(session, limit)
     ]}
+
+
+@app.get("/feed")
+def feed_endpoint(
+    user_id: str,
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=24, ge=1, le=24),
+    session: Session = Depends(get_session),  # noqa: B008
+) -> dict[str, object]:
+    try:
+        return get_feed(session, UUID(user_id), page, page_size)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail="Invalid user id") from error
 
 
 @app.get("/saved/{user_id}")
