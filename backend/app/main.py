@@ -14,6 +14,7 @@ from app.quality import get_quality_stats
 from app.query_parser import OpenAIQueryParser
 from app.search import search_tattoos
 from app.similar import similar_tattoos
+from app.skips import skip_tattoo
 from app.storage import ImageStorage, StorageConfig
 from app.vector_search import embedding_provider_from_env, vector_search
 
@@ -29,9 +30,10 @@ def health() -> dict[str, str]:
 def gallery(
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=24, ge=1, le=100),
+    session_id: str | None = Query(default=None),
     session: Session = Depends(get_session),  # noqa: B008
 ) -> dict[str, object]:
-    return get_gallery(session, page, page_size)
+    return get_gallery(session, page, page_size, session_id)
 
 
 @app.get("/tattoos/{tattoo_id}")
@@ -79,13 +81,31 @@ def like_tattoo_endpoint(
     return {"tattoo_id": tattoo_id, "liked": True}
 
 
+@app.post("/tattoos/{tattoo_id}/skip")
+def skip_tattoo_endpoint(
+    tattoo_id: str,
+    session_id: str = Form(...),
+    user_id: str | None = Form(default=None),
+    session: Session = Depends(get_session),  # noqa: B008
+) -> dict[str, object]:
+    try:
+        parsed_id = UUID(tattoo_id)
+        parsed_user_id = UUID(user_id) if user_id else None
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail="Invalid id") from error
+    if not skip_tattoo(session, parsed_id, session_id, parsed_user_id):
+        raise HTTPException(status_code=404, detail="Tattoo not found")
+    return {"tattoo_id": tattoo_id, "skipped": True}
+
+
 @app.get("/search")
 def search(
     q: str = Query(default=""),
     limit: int = Query(default=24, ge=1, le=100),
+    session_id: str | None = Query(default=None),
     session: Session = Depends(get_session),  # noqa: B008
 ) -> dict[str, object]:
-    return {"query": q, "items": search_tattoos(session, q, limit)}
+    return {"query": q, "items": search_tattoos(session, q, limit, session_id)}
 
 
 @app.get("/search/vector")

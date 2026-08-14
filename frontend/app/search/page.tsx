@@ -2,6 +2,7 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { LikeButton } from "../../components/LikeButton";
+import { SkipButton } from "../../components/SkipButton";
 
 type SearchItem = {
   id: string;
@@ -64,6 +65,7 @@ export default function SearchPage() {
                   <img src={item.image_url} alt={item.semantic_description ?? "Tattoo design"} />
                   <p>{[item.style, item.subject, item.placement].filter(Boolean).join(" · ")}</p>
                   <LikeButton tattooId={item.id} />
+                  <SkipButton tattooId={item.id} />
                 </article>
               ))
             ) : (

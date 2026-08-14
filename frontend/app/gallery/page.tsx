@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { LikeButton } from "../../components/LikeButton";
+import { SkipButton } from "../../components/SkipButton";
 
 type Tattoo = {
   id: string;
@@ -44,6 +45,7 @@ export default function GalleryPage() {
                 <img src={tattoo.image_url} alt={tattoo.subject ?? "Tattoo design"} />
                 <p>{[tattoo.style, tattoo.subject].filter(Boolean).join(" · ")}</p>
                 <LikeButton tattooId={tattoo.id} />
+                <SkipButton tattooId={tattoo.id} />
               </article>
             ))}
           </section>

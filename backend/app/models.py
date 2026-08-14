@@ -60,3 +60,13 @@ class Like(Base):
     session_id: Mapped[str] = mapped_column(Text)
     tattoo_id: Mapped[UUID] = mapped_column(ForeignKey("tattoos.id"))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class Skip(Base):
+    __tablename__ = "skips"
+
+    id: Mapped[UUID] = mapped_column(primary_key=True)
+    user_id: Mapped[UUID | None] = mapped_column(ForeignKey("users.id"))
+    session_id: Mapped[str] = mapped_column(Text)
+    tattoo_id: Mapped[UUID] = mapped_column(ForeignKey("tattoos.id"))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

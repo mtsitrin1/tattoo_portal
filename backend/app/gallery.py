@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.models import Tattoo
+from app.models import Skip, Tattoo
 
 
 @dataclass(frozen=True)
@@ -22,12 +22,17 @@ class GalleryItem:
         return values
 
 
-def get_gallery(session: Session, page: int, page_size: int) -> dict[str, object]:
+def get_gallery(session: Session, page: int, page_size: int, session_id: str | None = None) -> dict[str, object]:
     page = max(page, 1)
     page_size = min(max(page_size, 1), 100)
     total = int(session.scalar(select(func.count(Tattoo.id))) or 0)
+    statement = select(Tattoo)
+    if session_id:
+        statement = statement.where(
+            ~Tattoo.id.in_(select(Skip.tattoo_id).where(Skip.session_id == session_id))
+        )
     tattoos = session.scalars(
-        select(Tattoo)
+        statement
         .order_by(Tattoo.created_at.desc())
         .offset((page - 1) * page_size)
         .limit(page_size)

@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
-from app.models import Tattoo
+from app.models import Skip, Tattoo
 
 
 @dataclass(frozen=True)
@@ -24,7 +24,9 @@ class SearchItem:
         return values
 
 
-def search_tattoos(session: Session, query: str, limit: int = 24) -> list[dict[str, str | None]]:
+def search_tattoos(
+    session: Session, query: str, limit: int = 24, session_id: str | None = None
+) -> list[dict[str, str | None]]:
     query = query.strip()
     if not query:
         return []
@@ -38,9 +40,12 @@ def search_tattoos(session: Session, query: str, limit: int = 24) -> list[dict[s
     ]
     matches = or_(*(field.ilike(pattern) for field in fields))
     rank = func.lower(func.concat_ws(" ", *fields)).like(f"%{query.lower()}%")
-    tattoos = session.scalars(
-        select(Tattoo).where(matches).order_by(rank.desc(), Tattoo.created_at.desc()).limit(limit)
-    ).all()
+    statement = select(Tattoo).where(matches)
+    if session_id:
+        statement = statement.where(
+            ~Tattoo.id.in_(select(Skip.tattoo_id).where(Skip.session_id == session_id))
+        )
+    tattoos = session.scalars(statement.order_by(rank.desc(), Tattoo.created_at.desc()).limit(limit)).all()
     return [
         SearchItem(
             tattoo.id,
