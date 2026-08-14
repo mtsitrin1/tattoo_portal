@@ -21,7 +21,7 @@ source .venv/bin/activate
 pip install -e '.[dev]'
 
 cd ..
-docker compose up -d postgres
+docker compose up -d postgres minio
 
 cd backend
 alembic upgrade head
@@ -36,7 +36,7 @@ npm install
 npm run dev
 ```
 
-The API is available at http://localhost:8000 and the web app at http://localhost:3000.
+The API is available at http://localhost:8000, the web app at http://localhost:3000, and the MinIO console at http://localhost:9001.
 
 Stop the database with `docker compose down`. Add `-v` only when you intentionally want to remove the local database volume.
 
