@@ -7,6 +7,7 @@ from app.db import get_session
 from app.gallery import get_gallery
 from app.ingestion import IngestionService
 from app.quality import get_quality_stats
+from app.search import search_tattoos
 from app.storage import ImageStorage, StorageConfig
 
 app = FastAPI(title="Tattoo Portal API", version="0.1.0")
@@ -24,6 +25,15 @@ def gallery(
     session: Session = Depends(get_session),  # noqa: B008
 ) -> dict[str, object]:
     return get_gallery(session, page, page_size)
+
+
+@app.get("/search")
+def search(
+    q: str = Query(default=""),
+    limit: int = Query(default=24, ge=1, le=100),
+    session: Session = Depends(get_session),  # noqa: B008
+) -> dict[str, object]:
+    return {"query": q, "items": search_tattoos(session, q, limit)}
 
 
 @app.get("/quality")
