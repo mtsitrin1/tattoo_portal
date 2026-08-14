@@ -1,0 +1,5 @@
+{
+  "vector_similarity_weight": 0.7,
+  "popularity_weight": 0.2,
+  "recency_weight": 0.1
+}
