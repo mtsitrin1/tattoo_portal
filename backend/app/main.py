@@ -1,9 +1,11 @@
 import os
+from uuid import UUID
 
-from fastapi import Depends, FastAPI, File, Form, Query, UploadFile
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Query, UploadFile
 from sqlalchemy.orm import Session
 
 from app.db import get_session
+from app.detail import get_tattoo_detail
 from app.gallery import get_gallery
 from app.hybrid_search import hybrid_search
 from app.ingestion import IngestionService
@@ -28,6 +30,17 @@ def gallery(
     session: Session = Depends(get_session),  # noqa: B008
 ) -> dict[str, object]:
     return get_gallery(session, page, page_size)
+
+
+@app.get("/tattoos/{tattoo_id}")
+def tattoo_detail(tattoo_id: str, session: Session = Depends(get_session)) -> dict[str, object]:  # noqa: B008
+    try:
+        detail = get_tattoo_detail(session, UUID(tattoo_id))
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail="Invalid tattoo id") from error
+    if detail is None:
+        raise HTTPException(status_code=404, detail="Tattoo not found")
+    return detail
 
 
 @app.get("/search")
