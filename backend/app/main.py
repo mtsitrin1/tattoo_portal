@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.db import get_session
 from app.detail import get_tattoo_detail
+from app.events import EVENT_TYPES, list_events, record_event
 from app.gallery import get_gallery
 from app.hybrid_search import hybrid_search
 from app.ingestion import IngestionService
@@ -79,6 +80,7 @@ def like_tattoo_endpoint(
         raise HTTPException(status_code=400, detail="Invalid id") from error
     if not like_tattoo(session, parsed_id, session_id, parsed_user_id):
         raise HTTPException(status_code=404, detail="Tattoo not found")
+    record_event(session, "like", session_id, parsed_id, parsed_user_id)
     return {"tattoo_id": tattoo_id, "liked": True}
 
 
@@ -96,6 +98,7 @@ def skip_tattoo_endpoint(
         raise HTTPException(status_code=400, detail="Invalid id") from error
     if not skip_tattoo(session, parsed_id, session_id, parsed_user_id):
         raise HTTPException(status_code=404, detail="Tattoo not found")
+    record_event(session, "skip", session_id, parsed_id, parsed_user_id)
     return {"tattoo_id": tattoo_id, "skipped": True}
 
 
@@ -111,7 +114,37 @@ def save_tattoo_endpoint(
         raise HTTPException(status_code=400, detail="Invalid id") from error
     if not save_tattoo(session, parsed_id, parsed_user_id):
         raise HTTPException(status_code=404, detail="Tattoo not found")
+    record_event(session, "save", str(parsed_user_id), parsed_id, parsed_user_id)
     return {"tattoo_id": tattoo_id, "saved": True}
+
+
+@app.post("/events")
+def event_endpoint(
+    event_type: str = Form(...),
+    session_id: str = Form(...),
+    tattoo_id: str = Form(...),
+    user_id: str | None = Form(default=None),
+    session: Session = Depends(get_session),  # noqa: B008
+) -> dict[str, object]:
+    try:
+        parsed_tattoo_id = UUID(tattoo_id)
+        parsed_user_id = UUID(user_id) if user_id else None
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail="Invalid id") from error
+    if event_type not in EVENT_TYPES:
+        raise HTTPException(status_code=400, detail="Invalid event type")
+    if not record_event(session, event_type, session_id, parsed_tattoo_id, parsed_user_id):
+        raise HTTPException(status_code=404, detail="Tattoo not found")
+    return {"recorded": True}
+
+
+@app.get("/events")
+def events_endpoint(limit: int = Query(default=100, ge=1, le=1000), session: Session = Depends(get_session)) -> dict[str, object]:  # noqa: B008
+    return {"events": [
+        {"id": str(event.id), "session_id": event.session_id, "tattoo_id": str(event.tattoo_id),
+         "event_type": event.event_type, "created_at": event.created_at.isoformat()}
+        for event in list_events(session, limit)
+    ]}
 
 
 @app.get("/saved/{user_id}")

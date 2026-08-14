@@ -78,3 +78,14 @@ class SavedTattoo(Base):
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), primary_key=True)
     tattoo_id: Mapped[UUID] = mapped_column(ForeignKey("tattoos.id"), primary_key=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class UserInteraction(Base):
+    __tablename__ = "user_interactions"
+
+    id: Mapped[UUID] = mapped_column(primary_key=True)
+    user_id: Mapped[UUID | None] = mapped_column(ForeignKey("users.id"))
+    session_id: Mapped[str] = mapped_column(Text)
+    tattoo_id: Mapped[UUID] = mapped_column(ForeignKey("tattoos.id"))
+    event_type: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
