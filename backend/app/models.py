@@ -70,3 +70,11 @@ class Skip(Base):
     session_id: Mapped[str] = mapped_column(Text)
     tattoo_id: Mapped[UUID] = mapped_column(ForeignKey("tattoos.id"))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class SavedTattoo(Base):
+    __tablename__ = "saved_tattoos"
+
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), primary_key=True)
+    tattoo_id: Mapped[UUID] = mapped_column(ForeignKey("tattoos.id"), primary_key=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

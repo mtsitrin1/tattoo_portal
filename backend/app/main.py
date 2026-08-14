@@ -12,6 +12,7 @@ from app.ingestion import IngestionService
 from app.likes import like_tattoo
 from app.quality import get_quality_stats
 from app.query_parser import OpenAIQueryParser
+from app.saves import list_saved_tattoos, save_tattoo
 from app.search import search_tattoos
 from app.similar import similar_tattoos
 from app.skips import skip_tattoo
@@ -96,6 +97,34 @@ def skip_tattoo_endpoint(
     if not skip_tattoo(session, parsed_id, session_id, parsed_user_id):
         raise HTTPException(status_code=404, detail="Tattoo not found")
     return {"tattoo_id": tattoo_id, "skipped": True}
+
+
+@app.post("/tattoos/{tattoo_id}/save")
+def save_tattoo_endpoint(
+    tattoo_id: str,
+    user_id: str = Form(...),
+    session: Session = Depends(get_session),  # noqa: B008
+) -> dict[str, object]:
+    try:
+        parsed_id, parsed_user_id = UUID(tattoo_id), UUID(user_id)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail="Invalid id") from error
+    if not save_tattoo(session, parsed_id, parsed_user_id):
+        raise HTTPException(status_code=404, detail="Tattoo not found")
+    return {"tattoo_id": tattoo_id, "saved": True}
+
+
+@app.get("/saved/{user_id}")
+def saved_tattoos_endpoint(user_id: str, session: Session = Depends(get_session)) -> dict[str, object]:  # noqa: B008
+    try:
+        parsed_user_id = UUID(user_id)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail="Invalid user id") from error
+    items = list_saved_tattoos(session, parsed_user_id)
+    return {
+        "user_id": user_id,
+        "items": [{"id": str(item.id), "image_url": item.image_url, "style": item.style, "subject": item.subject} for item in items],
+    }
 
 
 @app.get("/search")

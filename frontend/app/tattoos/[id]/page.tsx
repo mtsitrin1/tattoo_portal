@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { LikeButton } from "../../../components/LikeButton";
+import { SaveButton } from "../../../components/SaveButton";
 
 type Detail = {
   image_url: string;
@@ -37,6 +38,7 @@ export default function TattooDetailPage() {
       <img src={detail.image_url} alt={detail.metadata.semantic_description ?? "Tattoo design"} />
       <h1>{detail.metadata.semantic_description ?? "Tattoo design"}</h1>
       <LikeButton tattooId={params.id} />
+      <SaveButton tattooId={params.id} />
       {detail.artist && <p>Artist: {detail.artist.name}</p>}
       {detail.source?.url && <p><a href={detail.source.url}>View source: {detail.source.name}</a></p>}
       <dl>
