@@ -1,0 +1,51 @@
+{
+  "version": "v1",
+  "styles": [
+    "fine-line",
+    "minimalist",
+    "traditional",
+    "neo-traditional",
+    "realism",
+    "blackwork",
+    "geometric",
+    "ornamental",
+    "watercolor",
+    "japanese",
+    "tribal",
+    "abstract"
+  ],
+  "placements": [
+    "forearm",
+    "inner forearm",
+    "upper arm",
+    "bicep",
+    "shoulder",
+    "chest",
+    "sternum",
+    "back",
+    "ribs",
+    "thigh",
+    "calf",
+    "ankle",
+    "wrist",
+    "hand",
+    "neck",
+    "foot"
+  ],
+  "size": ["small", "medium", "large"],
+  "complexity": ["simple", "moderate", "detailed"],
+  "color": ["black", "black-and-grey", "color"],
+  "orientation": ["vertical", "horizontal", "square", "wrap"],
+  "subjects": [
+    "animals",
+    "birds",
+    "botanical",
+    "celestial",
+    "floral",
+    "nature",
+    "people",
+    "symbols",
+    "text",
+    "abstract"
+  ]
+}
