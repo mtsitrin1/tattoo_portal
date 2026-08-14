@@ -40,6 +40,16 @@ The API is available at http://localhost:8000, the web app at http://localhost:3
 
 Stop the database with `docker compose down`. Add `-v` only when you intentionally want to remove the local database volume.
 
+## Full local stack
+
+To build and run the backend, frontend, PostgreSQL/pgvector, and MinIO together:
+
+```bash
+docker compose up --build
+```
+
+The backend applies Alembic migrations before starting. The web app is available at http://localhost:3000.
+
 ## Checks
 
 ```bash
