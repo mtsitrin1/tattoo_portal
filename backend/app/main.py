@@ -1,9 +1,10 @@
 import os
 
-from fastapi import Depends, FastAPI, File, Form, UploadFile
+from fastapi import Depends, FastAPI, File, Form, Query, UploadFile
 from sqlalchemy.orm import Session
 
 from app.db import get_session
+from app.gallery import get_gallery
 from app.ingestion import IngestionService
 from app.quality import get_quality_stats
 from app.storage import ImageStorage, StorageConfig
@@ -14,6 +15,15 @@ app = FastAPI(title="Tattoo Portal API", version="0.1.0")
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/tattoos")
+def gallery(
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=24, ge=1, le=100),
+    session: Session = Depends(get_session),  # noqa: B008
+) -> dict[str, object]:
+    return get_gallery(session, page, page_size)
 
 
 @app.get("/quality")
