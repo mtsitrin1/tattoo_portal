@@ -1,0 +1,1 @@
+"""Tattoo Portal backend package."""
