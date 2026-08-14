@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.db import get_session
 from app.ingestion import IngestionService
+from app.quality import get_quality_stats
 from app.storage import ImageStorage, StorageConfig
 
 app = FastAPI(title="Tattoo Portal API", version="0.1.0")
@@ -13,6 +14,11 @@ app = FastAPI(title="Tattoo Portal API", version="0.1.0")
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/quality")
+def quality_dashboard(session: Session = Depends(get_session)) -> dict[str, int | float]:  # noqa: B008
+    return get_quality_stats(session).as_dict()
 
 
 def get_storage() -> ImageStorage:
