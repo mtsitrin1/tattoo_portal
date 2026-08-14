@@ -34,6 +34,8 @@ class Tattoo(Base):
 
     id: Mapped[UUID] = mapped_column(primary_key=True)
     image_url: Mapped[str] = mapped_column(Text)
+    image_hash: Mapped[str | None] = mapped_column(String)
+    duplicate_of: Mapped[UUID | None] = mapped_column(ForeignKey("tattoos.id"))
     source_id: Mapped[UUID] = mapped_column(ForeignKey("sources.id"))
     artist_id: Mapped[UUID | None] = mapped_column(ForeignKey("artists.id"))
     semantic_description: Mapped[str | None] = mapped_column(Text)
