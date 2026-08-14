@@ -9,6 +9,7 @@ from app.ingestion import IngestionService
 from app.quality import get_quality_stats
 from app.search import search_tattoos
 from app.storage import ImageStorage, StorageConfig
+from app.vector_search import embedding_provider_from_env, vector_search
 
 app = FastAPI(title="Tattoo Portal API", version="0.1.0")
 
@@ -34,6 +35,15 @@ def search(
     session: Session = Depends(get_session),  # noqa: B008
 ) -> dict[str, object]:
     return {"query": q, "items": search_tattoos(session, q, limit)}
+
+
+@app.get("/search/vector")
+def vector_search_endpoint(
+    q: str = Query(default=""),
+    limit: int = Query(default=24, ge=1, le=100),
+    session: Session = Depends(get_session),  # noqa: B008
+) -> dict[str, object]:
+    return {"query": q, "items": vector_search(session, embedding_provider_from_env(), q, limit)}
 
 
 @app.get("/quality")
