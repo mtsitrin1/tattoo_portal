@@ -50,3 +50,13 @@ class Tattoo(Base):
     orientation: Mapped[str | None] = mapped_column(String)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class Like(Base):
+    __tablename__ = "likes"
+
+    id: Mapped[UUID] = mapped_column(primary_key=True)
+    user_id: Mapped[UUID | None] = mapped_column(ForeignKey("users.id"))
+    session_id: Mapped[str] = mapped_column(Text)
+    tattoo_id: Mapped[UUID] = mapped_column(ForeignKey("tattoos.id"))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

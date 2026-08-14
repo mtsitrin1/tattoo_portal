@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
+import { LikeButton } from "../../components/LikeButton";
 
 type SearchItem = {
   id: string;
@@ -62,6 +63,7 @@ export default function SearchPage() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={item.image_url} alt={item.semantic_description ?? "Tattoo design"} />
                   <p>{[item.style, item.subject, item.placement].filter(Boolean).join(" · ")}</p>
+                  <LikeButton tattooId={item.id} />
                 </article>
               ))
             ) : (

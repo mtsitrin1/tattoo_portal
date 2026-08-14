@@ -9,6 +9,7 @@ from app.detail import get_tattoo_detail
 from app.gallery import get_gallery
 from app.hybrid_search import hybrid_search
 from app.ingestion import IngestionService
+from app.likes import like_tattoo
 from app.quality import get_quality_stats
 from app.query_parser import OpenAIQueryParser
 from app.search import search_tattoos
@@ -57,6 +58,25 @@ def similar_tattoo_endpoint(
     except ValueError as error:
         raise HTTPException(status_code=400, detail="Invalid tattoo id") from error
     return {"tattoo_id": tattoo_id, "items": similar_tattoos(session, parsed_id, limit)}
+
+
+@app.post("/tattoos/{tattoo_id}/like")
+def like_tattoo_endpoint(
+    tattoo_id: str,
+    session_id: str = Form(...),
+    user_id: str | None = Form(default=None),
+    session: Session = Depends(get_session),  # noqa: B008
+) -> dict[str, object]:
+    from uuid import UUID
+
+    try:
+        parsed_id = UUID(tattoo_id)
+        parsed_user_id = UUID(user_id) if user_id else None
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail="Invalid id") from error
+    if not like_tattoo(session, parsed_id, session_id, parsed_user_id):
+        raise HTTPException(status_code=404, detail="Tattoo not found")
+    return {"tattoo_id": tattoo_id, "liked": True}
 
 
 @app.get("/search")
