@@ -101,6 +101,16 @@ class OpenAIDescriptionProvider:
         return (response.choices[0].message.content or "").strip()
 
 
+class OpenAIEmbeddingProvider:
+    def __init__(self, api_key: str, model: str = "text-embedding-3-small") -> None:
+        self.client = OpenAI(api_key=api_key)
+        self.model = model
+
+    def embed(self, text: str) -> list[float]:
+        response = self.client.embeddings.create(model=self.model, input=text)
+        return response.data[0].embedding
+
+
 def extract_metadata_batch(
     session: Session,
     provider: VisionMetadataProvider,
@@ -147,4 +157,25 @@ def generate_descriptions_batch(
             session.rollback()
             failed += 1
             logger.exception("description_generation_failed tattoo_id=%s", tattoo_id)
+    return succeeded, failed
+
+
+def generate_embeddings_batch(session: Session, provider, tattoo_ids: Iterable[UUID]) -> tuple[int, int]:
+    succeeded = 0
+    failed = 0
+    for tattoo_id in tattoo_ids:
+        try:
+            tattoo = session.get(Tattoo, tattoo_id)
+            if tattoo is None:
+                raise ValueError(f"tattoo {tattoo_id} does not exist")
+            if not tattoo.semantic_description:
+                logger.info("embedding_skipped_no_description tattoo_id=%s", tattoo_id)
+                continue
+            tattoo.embedding = provider.embed(tattoo.semantic_description)
+            session.commit()
+            succeeded += 1
+        except Exception:
+            session.rollback()
+            failed += 1
+            logger.exception("embedding_generation_failed tattoo_id=%s", tattoo_id)
     return succeeded, failed

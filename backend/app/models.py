@@ -1,6 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
+from pgvector.sqlalchemy import Vector
 from sqlalchemy import DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -36,6 +37,7 @@ class Tattoo(Base):
     image_url: Mapped[str] = mapped_column(Text)
     image_hash: Mapped[str | None] = mapped_column(String)
     duplicate_of: Mapped[UUID | None] = mapped_column(ForeignKey("tattoos.id"))
+    embedding: Mapped[list[float] | None] = mapped_column(Vector(1536))
     source_id: Mapped[UUID] = mapped_column(ForeignKey("sources.id"))
     artist_id: Mapped[UUID | None] = mapped_column(ForeignKey("artists.id"))
     semantic_description: Mapped[str | None] = mapped_column(Text)
