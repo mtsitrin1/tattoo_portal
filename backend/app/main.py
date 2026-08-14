@@ -5,8 +5,10 @@ from sqlalchemy.orm import Session
 
 from app.db import get_session
 from app.gallery import get_gallery
+from app.hybrid_search import hybrid_search
 from app.ingestion import IngestionService
 from app.quality import get_quality_stats
+from app.query_parser import OpenAIQueryParser
 from app.search import search_tattoos
 from app.storage import ImageStorage, StorageConfig
 from app.vector_search import embedding_provider_from_env, vector_search
@@ -44,6 +46,20 @@ def vector_search_endpoint(
     session: Session = Depends(get_session),  # noqa: B008
 ) -> dict[str, object]:
     return {"query": q, "items": vector_search(session, embedding_provider_from_env(), q, limit)}
+
+
+@app.get("/search/hybrid")
+def hybrid_search_endpoint(
+    q: str = Query(default=""),
+    limit: int = Query(default=24, ge=1, le=100),
+    session: Session = Depends(get_session),  # noqa: B008
+) -> dict[str, object]:
+    filters = OpenAIQueryParser(
+        os.getenv("OPENAI_API_KEY", ""), os.getenv("OPENAI_QUERY_MODEL", "gpt-4o-mini")
+    ).parse(q)
+    return {"query": q, "filters": filters.model_dump(exclude_none=True), "items": hybrid_search(
+        session, embedding_provider_from_env(), q, filters, limit
+    )}
 
 
 @app.get("/quality")
