@@ -1,0 +1,550 @@
+.page {
+  --bg: #0f111c;
+  --panel: #161826;
+  --panel-2: #1c1e2e;
+  --border: #3f424d;
+  --border-soft: #2a2c3c;
+  --accent: #9184d9;
+  --accent-soft: #423a6a;
+  --accent-bg: #2b2741;
+  --accent-text: #d2cefd;
+  --text: #e9e9ed;
+  --text-dim: #9397ab;
+  --text-mute: #75798c;
+
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 32px 20px 64px;
+  display: flex;
+  justify-content: center;
+}
+
+.page :focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.shell {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.stepBar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.stepLabel {
+  font-family: var(--font-mono), monospace;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.stepTrack {
+  flex: 1;
+  height: 2px;
+  background: var(--accent-bg);
+}
+
+.stepFill {
+  height: 2px;
+  background: var(--accent);
+  transition: width 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stepFill {
+    transition: none;
+  }
+}
+
+.backButton {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.backButton:hover {
+  color: var(--text);
+}
+
+.heading {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+.accentDot {
+  color: var(--accent);
+}
+
+.subcopy {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.footNote {
+  font-size: 12px;
+  color: var(--text-mute);
+  text-align: center;
+}
+
+.cardStack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.optionCard {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  background: var(--panel-2);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+.optionCard:hover {
+  border-color: var(--accent-soft);
+}
+
+.optionCardTitle {
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.optionCardBody {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.textarea {
+  width: 100%;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 14px;
+  background: var(--panel-2);
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.5;
+  min-height: 104px;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.label {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-family: var(--font-mono), monospace;
+  letter-spacing: 0.06em;
+}
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 11px;
+  font-size: 13px;
+  color: var(--text-dim);
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.chip:hover {
+  border-color: var(--accent-soft);
+  color: var(--text);
+}
+
+.chipActive {
+  border: 1px solid var(--accent-soft);
+  border-radius: 999px;
+  padding: 6px 11px;
+  font-size: 13px;
+  background: var(--accent-bg);
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.chipActiveKey {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-family: var(--font-mono), monospace;
+  text-transform: uppercase;
+}
+
+.chipActiveValue {
+  color: var(--accent-text);
+}
+
+.btnPrimary {
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 13px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  width: 100%;
+}
+
+.btnPrimary:hover {
+  background: var(--accent-bg);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.55;
+  cursor: default;
+  background: none;
+}
+
+.btnGhost {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 13px;
+  text-align: center;
+  cursor: pointer;
+  padding: 4px;
+  font-family: inherit;
+}
+
+.btnGhost:hover {
+  color: var(--text);
+}
+
+.error {
+  border: 1px solid #7a4a4a;
+  background: #241417;
+  color: #e9b9b9;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  margin: 0;
+}
+
+.exploreCard {
+  border: 1px solid #595d6c;
+  border-radius: 14px;
+  background: var(--panel-2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.exploreImage {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  background: var(--border-soft);
+  display: block;
+}
+
+.exploreMeta {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.exploreTitleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.exploreTitle {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.exploreSub {
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.emptyState {
+  padding: 48px 16px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.actionRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.actionSecondary {
+  flex: 1;
+  height: 52px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: none;
+  color: var(--text-dim);
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.actionSecondary:hover {
+  border-color: var(--accent-soft);
+  color: var(--text);
+}
+
+.actionUndo {
+  width: 52px;
+  height: 52px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: none;
+  color: var(--text-dim);
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.actionUndo:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.actionPrimary {
+  flex: 1;
+  height: 52px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: none;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.actionPrimary:hover {
+  background: var(--accent-bg);
+}
+
+.tasteBlock {
+  border-top: 1px solid rgba(233, 233, 237, 0.16);
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tasteRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.tasteTrack {
+  height: 3px;
+  background: var(--accent-bg);
+  border-radius: 2px;
+}
+
+.tasteFill {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--accent);
+  transition: width 0.2s ease;
+}
+
+.keptLink {
+  align-self: center;
+  font-size: 13px;
+  color: var(--accent-text);
+  background: none;
+  border: 1px solid var(--accent-soft);
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.thumbRow {
+  display: flex;
+  gap: 6px;
+}
+
+.thumb {
+  flex: 1;
+  aspect-ratio: 1;
+  border-radius: 6px;
+  object-fit: cover;
+  background: var(--border-soft);
+  display: block;
+}
+
+.thumbMore {
+  flex: 1;
+  aspect-ratio: 1;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.facetList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.facet {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.facetHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.facetLabel {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.facetHint {
+  font-size: 11px;
+  color: var(--text-mute);
+}
+
+.templateChip {
+  flex: 1;
+  height: 56px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--border-soft);
+  color: var(--text-dim);
+  font-size: 10px;
+  font-family: var(--font-mono), monospace;
+  display: flex;
+  align-items: flex-end;
+  padding: 6px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.templateChipActive {
+  border-color: var(--accent);
+  color: var(--accent-text);
+  background: var(--accent-bg);
+}
+
+.templateRow {
+  display: flex;
+  gap: 6px;
+}
+
+.previewBox {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: radial-gradient(120% 90% at 50% 10%, #232532 0%, #171927 70%);
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.previewSilhouette {
+  width: 130px;
+  height: 300px;
+  border: 1px dashed #595d6c;
+  border-radius: 60px;
+}
+
+.previewDesign {
+  position: absolute;
+  bottom: 60px;
+  width: 84px;
+  height: 100px;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.previewCaption {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  color: var(--text-mute);
+  letter-spacing: 0.04em;
+}
+
+.sizeRow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sizeLabelRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.sizeSlider {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.savedBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  text-align: center;
+}
