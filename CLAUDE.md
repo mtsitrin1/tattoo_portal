@@ -68,6 +68,13 @@ Core entities: `Tattoo`, `Artist`, `Source`, `Tag`, `Embedding`, `User`,
 styles, placement, color, size, complexity, orientation), a semantic
 description, and an embedding generated from that description.
 
+`User` has `email`, `password_hash`, `role` (`user` | `artist` | `admin`,
+see #55). `Artist` has a nullable `user_id` FK back to `User` — an Artist
+record can exist unclaimed (from ingestion, #36/#38) before anyone logs in,
+and gets linked to a `role=artist` User via the claim flow (#56). Browsing,
+search, like, save, and skip do not require an account — auth only exists
+to support artist accounts.
+
 ## Taxonomy (see issue #10, starter list until that lands)
 
 Styles: fine-line, minimalist, traditional, neo-traditional, realism,
