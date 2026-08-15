@@ -4,12 +4,15 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
-from app.models import SavedTattoo, Tattoo
+from app.models import SavedTattoo, Tattoo, User
 
 
 def save_tattoo(session: Session, tattoo_id: UUID, user_id: UUID) -> bool:
     if session.get(Tattoo, tattoo_id) is None:
         return False
+    # There's no signup flow yet — user_id is a client-generated guest id, so the
+    # first save must create its `users` row before saved_tattoos can reference it.
+    session.execute(insert(User).values(id=user_id).on_conflict_do_nothing(index_elements=["id"]))
     statement = insert(SavedTattoo).values(tattoo_id=tattoo_id, user_id=user_id).on_conflict_do_nothing()
     session.execute(statement)
     session.commit()
