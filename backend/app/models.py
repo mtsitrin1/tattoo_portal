@@ -2,7 +2,7 @@ from datetime import datetime
 from uuid import UUID
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import DateTime, ForeignKey, String, Text
+from sqlalchemy import DateTime, ForeignKey, String, Text, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -52,6 +52,14 @@ class Tattoo(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[UUID] = mapped_column(primary_key=True)
+    email: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
 class Like(Base):
     __tablename__ = "likes"
 
@@ -83,7 +91,10 @@ class SavedTattoo(Base):
 class UserInteraction(Base):
     __tablename__ = "user_interactions"
 
-    id: Mapped[UUID] = mapped_column(primary_key=True)
+    # Inserted via session.add(), unlike Like/Skip's Core insert() — the ORM needs
+    # server_default declared here to fetch the DB-generated id back on flush,
+    # otherwise it flushes with a NULL identity key.
+    id: Mapped[UUID] = mapped_column(primary_key=True, server_default=text("gen_random_uuid()"))
     user_id: Mapped[UUID | None] = mapped_column(ForeignKey("users.id"))
     session_id: Mapped[str] = mapped_column(Text)
     tattoo_id: Mapped[UUID] = mapped_column(ForeignKey("tattoos.id"))

@@ -9,7 +9,7 @@ def test_save_is_idempotent_for_user_and_tattoo() -> None:
     session.get.return_value = object()
 
     assert save_tattoo(session, uuid4(), uuid4()) is True
-    session.execute.assert_called_once()
+    assert session.execute.call_count == 2
     session.commit.assert_called_once_with()
 
 
