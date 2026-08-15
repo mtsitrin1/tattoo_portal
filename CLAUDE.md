@@ -46,6 +46,21 @@ issues (Epics 4-8) for what's deferred and why each one is blocked.
   filled in by the pipeline over time. Don't require complete metadata to
   ingest.
 
+## Marketplace model
+
+- **Artist contact is a direct redirect, not a lead system.** "Contact
+  artist" opens the artist's own `contact_url` (Instagram/site/booking link)
+  in a new tab. There is no internal Lead entity, form, or notification
+  pipeline — the click is recorded as an `artist_click` interaction event
+  (#24) and that's the only record kept. (#49 and #51, which originally
+  covered lead creation and lead notification, were closed as superseded.)
+- **No monetization yet.** Artists aren't charged for anything in MVP-0/1.
+  Sponsored placement (#52) and billing (#54) are deliberately deferred —
+  revisit both together once there's an actual reason to charge artists.
+- **Artist dashboard (#50) is blocked on artist auth**, which doesn't exist
+  anywhere in this backlog yet. Don't scope the dashboard until there's a
+  decision on how an artist gets access to their own profile.
+
 ## Data model (see issue #2)
 
 Core entities: `Tattoo`, `Artist`, `Source`, `Tag`, `Embedding`, `User`,
